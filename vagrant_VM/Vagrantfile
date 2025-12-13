@@ -1,0 +1,34 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "bento/ubuntu-22.04"
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = 2048
+    vb.cups = 2
+  end
+
+  config.vm.define "ubuntu1" do |ubuntu1|
+    ubuntu1.vm.hostname = "vm1"
+
+    ubuntu1.vm.network "private_network",
+      ip: "10.10.10.11" #static ip
+
+    ubuntu1.vm.provision "shell", inline: <<-SHELL
+      sudo apt-get update -y
+      sudo apt-get install -y curl nano openssh-server
+    SHELL
+  end
+
+  config.vm.define "ubuntu2" do |ubuntu2|
+    ubuntu2.vm.hostname = "vm2"
+
+    ubuntu2.vm.network "private_network",
+      ip: "10.10.10.12" #static ip
+  
+    ubuntu2.vm.provision "shell", inline: <<-SHELL
+      sudo apt-get update -y
+      sudo apt-get install -y curl nano openssh-server
+    SHELL
+  end
+end
