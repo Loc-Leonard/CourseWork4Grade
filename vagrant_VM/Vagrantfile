@@ -17,6 +17,5 @@ v.cpus = 1
 end
 end
 config.vm.provision "shell", path: "provision.sh"
-
 end
 end
