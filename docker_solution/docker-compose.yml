@@ -1,8 +1,8 @@
 services:
-  isabelle:
+  issabele:
     image: technoexpress/issabel-pbx
-    container_name: isabelle
-    hostname: isabelle.pbx.host
+    container_name: issabele
+    hostname: issabele.pbx.host
     restart: unless-stopped
 
     ports:
