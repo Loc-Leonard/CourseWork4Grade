@@ -1,0 +1,54 @@
+# Курсовая работа
+# Используя IAC установить операционную систему, 
+# на нее установить средство VOIP, установить ip телефоны(минимум 3), 
+# настроить представление телефонов в VOIP, настроить очереди, ожидание. 
+
+# Стек: Vagrant + Docker compose:
+# VM - Ubuntu 22.04
+# Docker container - Isabelle (Callcenter)
+
+# Network:
+# eth0 - NAT
+# eth1 - LAN
+
+
+Vagrant.configure("2") do |config|
+    config.vm.box = "ubuntu/jammy64"
+    
+    config.vm.boot_timeout = 600
+
+    common_bootstrap = <<-SHELL
+        echo "=== Обновление и установка пакетов ==="
+        sudo apt-get update -y && apt-get upgrade
+        sudo apt-get install -y curl gnupg lsb-release ca-certificates openssh-client
+    SHELL
+
+    config.vm.define "vm-course" do |vm1|
+        vm1.vm.hostname = "server"
+        vm1.vm.network "private_network", ip: "192.168.10.10"
+        vm1.vm.provider "virtualbox" do |vb|
+            vb.name = "VM-COURSE"
+            vb.memory = 4096
+            vb.cpus = 2
+        end
+
+        vm1.vm.provision "shell", inline: common_bootstrap
+
+        vm1.vm.provision "shell", inline: <<-SHELL
+
+        sudo apt-get update -y && apt-get upgrade
+        # Docker Engine + Compose plugin
+            if ! command -v docker >/dev/null 2>&1; then
+                sudo install -m 0755 -d /etc/apt/keyrings
+                curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+                echo \
+                    "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+                    $(. /etc/os-release && echo $VERSION_CODENAME) stable" | \
+                    sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+                sudo apt-get update -y
+                sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+                sudo usermod -aG docker vagrant
+            fi
+        SHELL
+    end
+end
