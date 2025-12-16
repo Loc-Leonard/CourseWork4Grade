@@ -101,16 +101,18 @@ pjsip show aor 101
 
 ## Структура репозитория
 
+```text
 vagrant_VM/
-├── scripts/ # Скрипты провижининга VM
-│ ├── phone_course-1.sh # Настройка первой course-VM с SIP-клиентами
-│ ├── phone_course-2.sh # Настройка второй course-VM с SIP-клиентами
-│ ├── provision-issabel.sh # Настройка VoIP-сервера (Issabel/Asterisk) на Ubuntu
-│ └── provision.sh # Общий оркестратор провижининга, вызываемый из Vagrantfile
-├── REME.md # Документация проекта (README)
-├── Vagrantfile # Описание виртуальных машин, сетей и сценариев провижининга
-└── .gitignore # Настройки игнорирования файлов Git
-
+├── .vagrant/                  # Служебные файлы Vagrant (создаются автоматически)
+├── scripts/                   # Скрипты провижининга VM
+│   ├── phone_course-1.sh      # Настройка первой course-VM с SIP-клиентами
+│   ├── phone_course-2.sh      # Настройка второй course-VM с SIP-клиентами
+│   ├── provision-issabel.sh   # Настройка VoIP-сервера (Issabel/Asterisk) на Ubuntu
+│   └── provision.sh           # Общий оркестратор провижининга, вызываемый из Vagrantfile
+├── issabel-sourse.box         # Локальный box/образ Issabel (используется как base box)
+├── REME.md                    # Документация проекта (README)
+├── Vagrantfile                # Описание виртуальных машин, сетей и сценариев провижининга
+└── .gitignore                 # Настройки игнорирования файлов Git
 Основные файлы и каталоги:
 
 ### `Vagrantfile`
