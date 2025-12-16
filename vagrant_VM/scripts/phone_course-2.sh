@@ -1,17 +1,30 @@
 #!/usr/bin/env bash
 set -e
 
+ISSABEL_IP="192.168.88.12"
+NET_IF="eth1"
+PROFILE="/home/vagrant/.baresip-103"
+CFG="${PROFILE}/config"
+
 sudo apt-get update
 sudo apt-get install -y baresip
 
-# Конфиг для пользователя vagrant
-sudo -u vagrant mkdir -p /home/vagrant/.baresip
+sudo -u vagrant mkdir -p "${PROFILE}"
 
-# Один аккаунт 103 на Issabel 192.168.88.12
-cat << 'EOF' | sudo -u vagrant tee /home/vagrant/.baresip/accounts >/dev/null
-<sip:103@192.168.88.12>;auth_pass=pass103;regint=60;outbound=sip:192.168.88.12;transport=udp
+cat <<EOF | sudo -u vagrant tee "${PROFILE}/accounts" >/dev/null
+<sip:103@${ISSABEL_IP}>;auth_pass=pass103;regint=60;outbound=sip:${ISSABEL_IP};transport=udp
 EOF
 
-if ! grep -q '^net_interface' /home/vagrant/.baresip/config 2>/dev/null; then
-  echo "net_interface            eth1" | sudo -u vagrant tee -a /home/vagrant/.baresip/config >/dev/null
+if [ ! -f "${CFG}" ]; then
+  sudo -u vagrant baresip -f "${PROFILE}" -d >/tmp/baresip-init-103.log 2>&1 || true
+  sudo -u vagrant pkill -u vagrant -x baresip 2>/dev/null || true
 fi
+
+sudo -u vagrant sed -i '/^cuser_random[[:space:]]/d' "${CFG}" || true
+echo "cuser_random            no" | sudo -u vagrant tee -a "${CFG}" >/dev/null
+
+sudo -u vagrant sed -i '/^net_interface[[:space:]]/d' "${CFG}" || true
+echo "net_interface           ${NET_IF}" | sudo -u vagrant tee -a "${CFG}" >/dev/null
+
+sudo -u vagrant sed -i '/^sip_listen[[:space:]]/d' "${CFG}" || true
+echo "sip_listen              0.0.0.0:5103" | sudo -u vagrant tee -a "${CFG}" >/dev/null
