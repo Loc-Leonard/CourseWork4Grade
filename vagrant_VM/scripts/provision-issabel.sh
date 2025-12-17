@@ -78,9 +78,9 @@ timeout=30
 retry=5
 wrapuptime=0
 maxlen=0
-member => PJSIP/101-endpoint
-member => PJSIP/102-endpoint
-member => PJSIP/103-endpoint
+member => PJSIP/101
+member => PJSIP/102
+member => PJSIP/103
 EOCFG
 
 cat > /etc/asterisk/extensions_custom.conf << 'EOCFG'
@@ -88,6 +88,23 @@ cat > /etc/asterisk/extensions_custom.conf << 'EOCFG'
 exten => 7000,1,Answer()
  same => n,Queue(200,t)
  same => n,Hangup()
+
+exten => 101,1,NoOp(TEST call to 101)
+ same => n,Dial(PJSIP/101,30)
+ same => n,Hangup()
+
+exten => 102,1,NoOp(TEST call to 102)
+ same => n,Dial(PJSIP/102,30)
+ same => n,Hangup()
+
+ exten => 103,1,NoOp(TEST call to 103)
+ same => n,Dial(PJSIP/103,30)
+ same => n,Hangup()
+EOCFG
+
+cat >> /etc/asterisk/extensions_custom.conf << 'EOCFG'
+[from-internal]
+include => from-internal-custom
 EOCFG
 
 # Отключаем firewall на Issabel (firewalld или iptables)

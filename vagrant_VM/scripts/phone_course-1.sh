@@ -12,6 +12,10 @@ CFG102="${PROFILE_102}/config"
 
 sudo apt-get update
 sudo apt-get install -y baresip
+sudo apt-get install -y alsa-utils
+
+sudo modprobe snd_hda_intel || true
+sudo usermod -aG audio vagrant || true
 
 sudo -u vagrant mkdir -p "${PROFILE_101}" "${PROFILE_102}"
 
